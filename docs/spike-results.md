@@ -30,7 +30,7 @@ Status legend: PASS / FAIL / unverified. Nothing below is verified until a run f
 | extra | Agent-to-agent delegation replies in the same thread | unverified, deferred to Phase C | First real test is case-lead → reconciler in S1. |
 | extra | User-level config leaks into agents | **observed** | Agents load `~/.claude/CLAUDE.md` and Atul's Claude Code plugins/hooks (Ponytail). Harmless; disable Ponytail before recording. Judges won't have it. |
 | extra | macOS privacy prompt | **observed** | First run asks "Switch Console would like to access files in your Desktop folder". Must Allow. README: mention it, or suggest cloning outside Desktop/Documents. |
-| 6 | Mattermost REST posting | deferred to Fri hardening | |
+| 6 | Claude Code can post as finance/sales/user | **PASS** | Personal access tokens (`mmctl --local token generate <user> recoverops-test`) stored in gitignored `.env`. `scripts/mm.py say/read` posts top-level or in-thread and reads a channel/thread showing `top-level` vs `in-thread`. Scenario runs can now be scripted. A script-posted `@spike-a … reply in this thread` woke the agent and it answered **in-thread in 5 s** (session already warm). |
 
 ## Also seen
 
