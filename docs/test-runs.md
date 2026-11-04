@@ -20,3 +20,18 @@ Times are IST. Model: sonnet (template default).
 Notes
 - Investigator cited the email at `:9` (waiver) in run 1 and `:8` (delay) in run 2. Both true; `evidence.py` (Phase D) will make citations deterministic.
 - Switch posts its own "Starting a session…" / "Working…" status messages; one "Starting a session" landed top-level. Not ours to fix.
+
+## 4 Nov 2026: S1 with Ponytail off, PASS
+
+Atul turned off the Ponytail plugin on claude.ai. The change reached this Mac only when the agents restarted (sync manifest updated 21:48:29), so the 21:48 run still had Ponytail; it passed anyway.
+
+| Check | Run 3 (21:48) | Run 4 (21:52, clean) |
+|---|---|---|
+| Every check from runs 1–2 above | ✅ | ✅ |
+| Damage finding keeps its citation | ✅ | ✅ |
+| `PONYTAIL` in the 3 agent session logs | 3 each (loaded at startup) | **0** |
+| Payment posted → recommendation | 72 s | 48 s |
+
+Notes
+- Other synced plugins (engineering, product-management, founder-skill, linkedin-agent, frontend-design, playwright) still list their skills in each agent session. None of them run hooks or change behaviour, and no agent used them.
+- To check a machine is clean: `grep -ci ponytail ~/.claude/projects/*recoverops-agents-*/<new session>.jsonl` → 0.
