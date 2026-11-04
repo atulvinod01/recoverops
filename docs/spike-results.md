@@ -15,19 +15,27 @@ Status legend: PASS / FAIL / unverified. Nothing below is verified until a run f
 | # | Question | Result | Evidence / note |
 |---|---|---|---|
 | 1 | Agents run `../../tools/hello.py` from `{workspace}/agents/<name>` | **PASS** (spike-b) | Session log: cwd `.../recoverops/agents/spike-b`, script read `data/test.txt`. Explicit `{workspace}/agents/<name>` directories work. |
-| 2 | `finance` / `sales` users in the room get answered | unverified | Users created with `mmctl --local`, added to team `switch`; template's `room.users` put both in spike-room (Mattermost shows "finance added", "sales added"). |
-| 3 | Agent can tell who sent a message | **likely PASS** | Switch prepends `[Switch] <sender> addressed you in room …` to every message (seen: `user`, and `Admin (workspace owner)` from a Console DM). Still to confirm with `finance`. |
+| 2 | `finance` / `sales` users in the room get answered | **PASS** | Users created with `mmctl --local`, added to team `switch`, put in the room by `room.users`. `sales` (not linked to any Switch user) addressed spike-a (`anyone`) and got a correct answer in-thread. |
+| 3 | Agent can tell who sent a message | **PASS** | Switch prepends `[Switch] <username> addressed you in room …` (seen: `user`, `finance`, `sales`, `Admin (workspace owner)`). spike-a answered sales: *It was sent by "sales" … from the header Switch put on the message … not from anything inside the message itself.* Approval gate can check the sender is `finance`; `case.py` will also refuse any other reviewer. |
 | 4 | Concurrent SQLite writes | **skipped by design** | Only case-lead writes, through `tools/case.py`. Others return results in the thread. |
 | 5 | `.claude/settings.json` allow rule removes prompts with Auto mode off (spike-a) | **FAIL** | spike-a called `python3 ../../tools/hello.py` at 17:57:12 and never got a result: blocked on a permission request that did not appear in the Mattermost room. |
 | 5b | Auto mode on (spike-b): any prompts? | **PASS** | Same command ran with no prompt. **Decision: every RecoverOps agent keeps `auto_mode: true` (default); drop the settings files.** |
 | extra | CLAUDE.md loaded | **PASS** | spike-b's reply and spike-a's DM reply both end `[CLAUDE.md loaded: …]`. |
 | extra | Room instructions reach agents | **FAIL (not automatic)** | spike-b's reply didn't start with `SPIKE`; it never called `connect_to_room`/`read_context`. **Decision: all rules go in each agent's CLAUDE.md, not `room.instructions`.** |
 | extra | Agent reply to the template kickoff shows in Mattermost | **FAIL** | spike-b called `post_message(thread_id=<kickoff message id>)`, Switch returned an event id, but the post never reached Mattermost (`mmctl post list` shows nothing). The bridge posts the kickoff as a *reply* inside a thread, so the agent threaded onto a non-root post. Hypothesis: replies to a normal top-level human message work. **Decision: kickoff must not ask agents to reply; test threading with a human post.** |
-| extra | `owner-agents` ignores `finance` (spike-b) | unverified | |
-| extra | Agent-to-agent delegation replies in the same thread | unverified | |
+| extra | `owner-agents` refuses `finance` (spike-b) | **PASS** | Switch auto-replied in thread: "I only take instructions from my owner, and this chat account isn't linked to a Switch user yet". Right rule for `reconciler`. |
+| extra | Agent reply in thread under a human top-level post | **PASS** | spike-b's and spike-a's replies landed in the thread of the human's message. Only the template kickoff threading is broken. |
+| extra | Permission requests with Auto mode off | **observed** | Console runs agents with `--permission-prompt-tool stdio`: the request waits in Switch Console, never in Mattermost. Stuck session blocked every later message to that agent ("Queued. Waiting for the agent to start…"). |
+| extra | Stop current work | **observed** | Unblocks the agent, but the message queued behind it (finance → spike-a) was **dropped**: never answered. Gotcha 7 confirmed: re-send after a stop. `reset_demo.sh` + README must say so. |
+| extra | Agent-to-agent delegation replies in the same thread | unverified, deferred to Phase C | First real test is case-lead → reconciler in S1. |
 | extra | User-level config leaks into agents | **observed** | Agents load `~/.claude/CLAUDE.md` and Atul's Claude Code plugins/hooks (Ponytail). Harmless; disable Ponytail before recording. Judges won't have it. |
 | extra | macOS privacy prompt | **observed** | First run asks "Switch Console would like to access files in your Desktop folder". Must Allow. README: mention it, or suggest cloning outside Desktop/Documents. |
 | 6 | Mattermost REST posting | deferred to Fri hardening | |
+
+## Also seen
+
+- Agents are members of every team channel (Town Square, Off-Topic) and answer there too. Demo stays in the RecoverOps room; not a problem.
+- Session start takes ~10–30 s; a full answer ~30–50 s.
 
 ## Test script (post these in `spike-room`)
 
