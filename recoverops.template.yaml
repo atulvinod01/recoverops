@@ -1,0 +1,73 @@
+# RecoverOps: three agents and one room where finance, sales and the agents settle short-paid invoices.
+# Import in Switch Console: Templates -> Import template -> this file -> Use -> set the repo folder -> Create all.
+version: 1
+
+params:
+  workspace:
+    type: directory
+    label: RecoverOps repo folder
+    description: Absolute path to your clone of the recoverops repo (the folder holding this file)
+    default: /Users/atul/Desktop/atul/hackathon/recoverops
+  model:
+    type: string
+    label: Model
+    description: Model the three agents run. sonnet is faster and cheaper; opus reasons harder.
+    default: sonnet
+    input: advanced
+  provider:
+    type: provider
+    default: [claude]
+    input: advanced
+  location:
+    type: location
+    default: local
+    input: advanced
+  bridge:
+    type: bridge
+    default: [$first]
+    input: advanced
+
+agents:
+  - name: case-lead
+    description: Opens a case for each short payment, delegates, records findings, drafts, asks finance to approve
+    addressing: anyone
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}/agents/case-lead"
+    model: "{model}"
+    instructions: |
+      You are case-lead in RecoverOps. Follow ../CLAUDE.md (rules for every agent) and CLAUDE.md
+      in your working folder (your job). Reply only in the case thread.
+  - name: reconciler
+    description: Matches payments to invoices and breaks down the difference with tools/match.py and tools/discrepancy.py
+    addressing: owner-agents
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}/agents/reconciler"
+    model: "{model}"
+    instructions: |
+      You are reconciler in RecoverOps. Follow ../CLAUDE.md (rules for every agent) and CLAUDE.md
+      in your working folder (your job). Reply only in the case thread.
+  - name: investigator
+    description: Finds and labels the evidence behind each deduction; asks sales when only sales knows
+    addressing: anyone
+    provider: "{provider}"
+    location: "{location}"
+    directory: "{workspace}/agents/investigator"
+    model: "{model}"
+    instructions: |
+      You are investigator in RecoverOps. Follow ../CLAUDE.md (rules for every agent) and CLAUDE.md
+      in your working folder (your job). Reply only in the case thread.
+
+room:
+  name: recoverops
+  description: Short-paid invoices, one thread per payment. Agents investigate; finance approves.
+  bridge: "{bridge}"
+  agents: [case-lead, reconciler, investigator]
+  users: ["{$creator}", finance, sales]
+
+# No agent is mentioned here on purpose: replies to the kickoff do not reach the chat (spike finding).
+kickoff: |
+  RecoverOps is ready. To open a case, post a new message (not a reply) such as:
+  case-lead, payment PAY-311 from ABC Distributors, Rs 82,000 (with an @ before case-lead).
+  finance approves in the case thread with "approve", "edit: ..." or "reject: ..." addressed to case-lead.
