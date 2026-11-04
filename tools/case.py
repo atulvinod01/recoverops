@@ -4,6 +4,7 @@
   case.py finding C-001 --key freight --agent investigator --amount 6000 --label likely
           --citation data/remittance/x.txt:11 --note "..."  add or update one deduction finding
   case.py draft C-001 --kind customer_message --text "..."  store a draft (nothing is sent)
+          kinds: customer_message | credit_note_request | allocation (S3: which invoices a payment pays)
   case.py decide C-001 --reviewer finance --decision approve|edit|reject [--comment ...]
           [--owner sales --due 2026-11-14]                   finance's decision; approve writes outbox/
   case.py show C-001 | board | audit C-001
@@ -223,7 +224,7 @@ if __name__ == "__main__":
     p.set_defaults(fn=cmd_finding)
 
     p = sub.add_parser("draft"); p.add_argument("case_id")
-    p.add_argument("--kind", required=True, choices=["customer_message", "credit_note_request"])
+    p.add_argument("--kind", required=True, choices=["customer_message", "credit_note_request", "allocation"])
     p.add_argument("--text", required=True); p.add_argument("--actor", default="case-lead"); p.set_defaults(fn=cmd_draft)
 
     p = sub.add_parser("decide"); p.add_argument("case_id"); p.add_argument("--reviewer", required=True)

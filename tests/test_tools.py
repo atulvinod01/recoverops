@@ -137,5 +137,10 @@ def test_s4_duplicate_cannot_open_case(env):
     assert "duplicate" in run("case.py", "open", "PAY-312", "--thread", "r", env=env, ok=False)["error"]
 
 
-def test_s3_case_needs_allocation(env):
+def test_s3_allocation_needs_finance_approval(env, tmp_path):
     assert run("case.py", "open", "PAY-318", "--thread", "r", env=env)["status"] == "needs_allocation"
+    run("case.py", "decide", "C-001", "--reviewer", "finance", "--decision", "approve", env=env, ok=False)
+    run("case.py", "draft", "C-001", "--kind", "allocation", "--text", "PAY-318 -> INV-1061 + INV-1063", env=env)
+    c = run("case.py", "decide", "C-001", "--reviewer", "finance", "--decision", "approve", env=env)
+    assert c["status"] == "approved"
+    assert "INV-1061 + INV-1063" in (tmp_path / "outbox" / "C-001-allocation.md").read_text()
