@@ -2,13 +2,16 @@
 
   python3 scripts/mm.py say  <finance|sales|user> <channel> "<message>" [--thread ROOT_POST_ID]
   python3 scripts/mm.py read <channel> [--thread ROOT_POST_ID] [-n 20]
+  python3 scripts/mm.py watch <channel> [--until REGEX] [--quiet 120] [--timeout 600]
 
 Tokens come from .env (gitignored): MM_URL, MM_TEAM, MM_TOKEN_FINANCE, MM_TOKEN_SALES, MM_TOKEN_USER.
 `say` prints the new post id; use it as --thread to reply in or read that thread.
 """
 import argparse
 import json
+import re
 import sys
+import time
 import urllib.request
 from datetime import datetime
 from pathlib import Path
@@ -46,20 +49,51 @@ def say(who, channel, message, thread=None):
     return api(who, "POST", "/posts", body)["id"]
 
 
-def read(channel, thread=None, n=20):
+NAMES = {}
+
+
+def fetch(channel, thread=None, n=20):
     if thread:
         data = api(READER, "GET", f"/posts/{thread}/thread")
     else:
         data = api(READER, "GET", f"/channels/{channel_id(READER, channel)}/posts?per_page={n}")
-    posts = sorted(data["posts"].values(), key=lambda p: p["create_at"])[-n:]
-    names = {}
-    for p in posts:
-        uid = p["user_id"]
-        if uid not in names:
-            names[uid] = api(READER, "GET", f"/users/{uid}")["username"]
-        when = datetime.fromtimestamp(p["create_at"] / 1000).strftime("%H:%M:%S")
-        where = f"in-thread {p['root_id'][:8]}" if p["root_id"] else "top-level"
-        print(f"{when} {p['id'][:8]} [{names[uid]}] ({where}) {p['message']}")
+    return sorted(data["posts"].values(), key=lambda p: p["create_at"])
+
+
+def show(p):
+    uid = p["user_id"]
+    if uid not in NAMES:
+        NAMES[uid] = api(READER, "GET", f"/users/{uid}")["username"]
+    when = datetime.fromtimestamp(p["create_at"] / 1000).strftime("%H:%M:%S")
+    where = f"in-thread {p['root_id'][:8]}" if p["root_id"] else "top-level"
+    print(f"{when} {p['id'][:8]} [{NAMES[uid]}] ({where}) {p['message']}", flush=True)
+
+
+def read(channel, thread=None, n=20):
+    for p in fetch(channel, thread, n)[-n:]:
+        show(p)
+
+
+def watch(channel, quiet, timeout, until=None):
+    """Print new channel posts (top-level and replies) until `until` appears, `quiet` s pass with
+    no new post, or `timeout` s pass. Status posts Switch keeps editing ('Working…') are skipped."""
+    seen = {p["id"] for p in fetch(channel, n=60)}
+    start = last = time.time()
+    while time.time() - start < timeout:
+        time.sleep(5)
+        for p in fetch(channel, n=60):
+            if p["id"] in seen:
+                continue
+            seen.add(p["id"])
+            last = time.time()
+            show(p)
+            if until and re.search(until, p["message"]):
+                return 0
+        if time.time() - last > quiet:
+            print(f"-- quiet for {quiet}s", flush=True)
+            return 0
+    print(f"-- timeout {timeout}s", flush=True)
+    return 1
 
 
 if __name__ == "__main__":
@@ -74,9 +108,15 @@ if __name__ == "__main__":
     r.add_argument("channel")
     r.add_argument("--thread")
     r.add_argument("-n", type=int, default=20)
+    w = sub.add_parser("watch")
+    w.add_argument("channel")
+    w.add_argument("--quiet", type=int, default=120)
+    w.add_argument("--timeout", type=int, default=600)
+    w.add_argument("--until")
     a = ap.parse_args()
     if a.cmd == "say":
         print(say(a.who, a.channel, a.message, a.thread))
-    else:
+    elif a.cmd == "read":
         read(a.channel, a.thread, a.n)
-    sys.exit(0)
+    else:
+        sys.exit(watch(a.channel, a.quiet, a.timeout, a.until))

@@ -25,7 +25,7 @@ You are woken each time reconciler or investigator @mentions you in the thread.
 3. When every result is in:
    - For each deduction investigator labelled, run
      `case.py finding C-00x --key <slug> --agent investigator --amount <amount> --label <label> --citation <file:line> --note "<one line>"`
-     (`--citation` may be left out only for `unknown`). Use short keys: `freight`, `damage`, `unexplained`.
+     Always pass the first `file:line` investigator gave as `--citation`, even for `unknown`; leave it out only when investigator gave none. Use short keys: `freight`, `damage`, `unexplained`.
    - Run `case.py show C-00x` and take `difference_inr` and `recoverable_pending_inr` from it.
    - Store the drafts with `case.py draft` (they are not sent):
      - a `confirmed` deduction → `credit_note_request` for that amount and invoice line;
