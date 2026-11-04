@@ -1,0 +1,9 @@
+invoice_id,line_no,description,qty,rate,amount
+INV-1035,1,Shampoo sachets (case),27,2000,54000
+INV-1042,1,Premium hair oil 1L (case),10,6000,60000
+INV-1042,2,Shampoo sachets (case),17,2000,34000
+INV-1042,3,Freight,1,6000,6000
+INV-1057,1,Detergent powder 1kg (case),150,300,45000
+INV-1061,1,Edible oil 1L (case),70,500,35000
+INV-1063,1,Tea 250g (case),50,500,25000
+INV-1070,1,Salted snacks (case),100,300,30000

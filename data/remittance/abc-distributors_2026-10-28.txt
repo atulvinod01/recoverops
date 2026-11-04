@@ -1,0 +1,15 @@
+From: Accounts, ABC Distributors
+To: Receivables, Sunrise Consumer Products
+Date: 28 Oct 2026
+Subject: Payment advice - INV-1042
+
+Dear Sir/Madam,
+
+We have released Rs 82,000 against invoice INV-1042 (Rs 1,00,000) by NEFT.
+
+Deductions:
+Less: Freight Rs 6,000 - waived by your rep for late delivery
+Less: 2 cases damaged stock Rs 12,000
+
+Regards,
+Accounts Team, ABC Distributors
