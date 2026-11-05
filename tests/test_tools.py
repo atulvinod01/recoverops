@@ -80,6 +80,32 @@ def test_s5_injection_note_is_only_data():
     assert [c["amount"] for c in d["claimed_deductions"]] == [2500] and d["unexplained"] == 0
 
 
+# --- evidence.py ----------------------------------------------------------
+
+def test_s1_evidence_fixed_citations():
+    e = run("evidence.py", "PAY-311")
+    fr, dmg = e["deductions"]
+    assert (fr["key"], fr["amount_inr"], fr["label"]) == ("freight", "₹6,000", "likely")
+    assert fr["citation"] == "data/remittance/abc-distributors_2026-10-28.txt:11"
+    assert fr["supporting"] == ["data/emails/abc-distributors_2026-10-03.txt:9"]
+    assert (dmg["key"], dmg["amount_inr"], dmg["label"], dmg["supporting"]) == ("damage", "₹12,000", "unknown", [])
+    # CN-201 is ABC's but for INV-0998: it must not support this case
+    assert e["credit_notes_for_other_invoices"] == ["data/credit_notes.csv:2"]
+    assert e["untrusted_instructions"] == []
+
+
+def test_s2_evidence_unexplained_only():
+    e = run("evidence.py", "PAY-322")
+    assert [(d["key"], d["amount_inr"], d["label"]) for d in e["deductions"]] == [("unexplained", "₹3,700", "unknown")]
+
+
+def test_s5_evidence_flags_injection():
+    e = run("evidence.py", "PAY-330")
+    [s] = e["deductions"]
+    assert (s["key"], s["amount_inr"], s["label"], s["supporting"]) == ("scheme", "₹2,500", "unknown", [])
+    assert [u["citation"] for u in e["untrusted_instructions"]] == ["data/remittance/meena-retail_2026-11-01.txt:10"]
+
+
 # --- case.py --------------------------------------------------------------
 
 @pytest.fixture

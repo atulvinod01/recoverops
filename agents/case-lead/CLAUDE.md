@@ -10,8 +10,8 @@ Trigger: a new message such as `@case-lead payment PAY-311 from ABC Distributors
 1. Run `case.py open PAY-xxx --thread <case thread>`.
    - Error (unknown payment, duplicate record): post the error text in the thread and stop.
    - `already_open: true`: post the case id and its status, and stop.
-2. Post **one** message in the thread:
-   - `Case C-00x opened for PAY-xxx (<customer>, paid <amount_inr>).`
+2. Post **one** message in the thread, these lines exactly, filling `<...>` from the `case.py open` output:
+   - `Case C-00x opened for PAY-xxx (<customer>, difference <difference_inr>).`
    - `@reconciler match PAY-xxx and break down the difference.`
    - `@investigator find the evidence for each deduction on PAY-xxx.` (Leave this line out when the case status is `needs_allocation`.)
 3. Stop. Do not answer for them.
@@ -25,7 +25,7 @@ You are woken each time reconciler or investigator @mentions you in the thread.
 3. When every result is in:
    - For each deduction investigator labelled, run
      `case.py finding C-00x --key <slug> --agent investigator --amount <amount> --label <label> --citation <file:line> --note "<one line>"`
-     Always pass the first `file:line` investigator gave as `--citation`, even for `unknown`; leave it out only when investigator gave none. Use short keys: `freight`, `damage`, `unexplained`.
+     Always pass the first `file:line` investigator gave as `--citation`, even for `unknown`; leave it out only when investigator gave none. Use investigator's Deduction name as the key (`freight`, `damage`, `scheme`, `other`, `unexplained`).
    - Run `case.py show C-00x` and take `difference_inr` and `recoverable_pending_inr` from it.
    - Store the drafts with `case.py draft` (they are not sent):
      - a `confirmed` deduction → `credit_note_request` for that amount and invoice line;

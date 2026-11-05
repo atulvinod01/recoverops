@@ -35,3 +35,17 @@ Atul turned off the Ponytail plugin on claude.ai. The change reached this Mac on
 Notes
 - Other synced plugins (engineering, product-management, founder-skill, linkedin-agent, frontend-design, playwright) still list their skills in each agent session. None of them run hooks or change behaviour, and no agent used them.
 - To check a machine is clean: `grep -ci ponytail ~/.claude/projects/*recoverops-agents-*/<new session>.jsonl` → 0.
+
+## 5 Nov 2026: S1 run 5 after bug fixes, PASS
+
+Fixes under test:
+- `tools/evidence.py`: the investigator gets fixed citations from a tool instead of grepping (it ran only `evidence.py PAY-311`, twice).
+- case-lead's opening line used "paid <amount>", which `case.py open` never prints, so runs 1–3 copied ₹82,000 from finance's message (breaking rule 1). It now uses `difference <difference_inr>`.
+
+| Check | Run 5 (19:18) |
+|---|---|
+| Every check from runs 1–4 | ✅ |
+| Opening line: "difference ₹18,000" (from tool output) | ✅ |
+| Evidence: freight `remittance…:11; emails…:9; sales in thread`, damage `remittance…:12`, same as evidence.py | ✅ |
+| Payment posted → recommendation | 51 s |
+| `PONYTAIL` in agent logs | 0 |
