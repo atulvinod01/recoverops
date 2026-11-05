@@ -104,3 +104,18 @@ Then in the case thread: sales repeated the answer (case-lead saw nothing new an
 Found and fixed: case-lead pointed finance to the thread by its internal id (`sw_bf04…`). Shared rules now say to describe a thread in words (commit bdb6441; not yet seen live).
 Noted: decisions refused for being outside the thread never reach case.py, so they are in the chat but not in the audit log. Decisions inside the thread are always audited.
 Video tip: only finance's first "payment …" message goes in the main box; everything else via Reply.
+
+## 5 Nov 2026: fresh-clone test, tools and scripts only (20:15)
+
+Cloned from GitHub into `../fresh-clone/recoverops` (SSH: the repo is still private) and followed the README.
+
+| Step | Result |
+|---|---|
+| Clone has no `.env`, `cases.db`, `outbox/` (34 tracked files) | ✅ |
+| Setup step 2: `python3 tools/match.py PAY-311` → `short_paid`, `₹18,000` | ✅ |
+| `python3 -m pytest -q tests` → 15 passed | ✅ (macOS's built-in Python has no pytest → README now says how to install it) |
+| Full case flow run from `agents/case-lead` with default paths: open → finding → draft → sales refused → finance approves → `outbox/` created at repo root | ✅ |
+| `scripts/reset_demo.sh` without `.env` prints the manual `!reset` steps | ✅ |
+| `run_s4.sh` / `mm.py` without `.env` | ❌ Python traceback → now a one-line "No .env: copy .env.example…" message (a18d443) |
+
+Not covered: deploying the template from the clone in Switch Console, and cloning over HTTPS (works only once the repo is public).
