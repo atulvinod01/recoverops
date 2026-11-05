@@ -17,6 +17,8 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+if not (ROOT / ".env").exists():
+    sys.exit("No .env: copy .env.example to .env and add the Mattermost tokens (README, Setup step 5).")
 ENV = dict(
     line.split("=", 1) for line in (ROOT / ".env").read_text().splitlines() if "=" in line
 )

@@ -184,7 +184,7 @@ Results of every live run, including what broke and how it was fixed, are in [`d
 ```bash
 python3 -m pytest -q tests
 ```
-These are 15 exact-value tests on the tools for S1–S5, including the approval gate. They pass on Python 3.9, 3.11, 3.12 and 3.13.
+If pytest is missing, install it first with `python3 -m pip install pytest`. These are 15 exact-value tests on the tools for S1–S5, including the approval gate. They pass on Python 3.9, 3.11, 3.12 and 3.13.
 
 ### Between runs
 `scripts/reset_demo.sh` empties `cases.db` and `outbox/` and posts `!reset` for each agent. If an agent seems stuck, post `!interrupt @<agent>` in the room, then send your last message again.

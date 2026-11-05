@@ -3,6 +3,7 @@
 # human message, like a person reading and typing.
 set -euo pipefail
 cd "$(dirname "$0")/.."
+[ -f .env ] || { echo "No .env: copy .env.example to .env and add the Mattermost tokens (README, Setup step 5)." >&2; exit 1; }
 R=${ROOM:-recoverops}
 say() { python3 scripts/mm.py say "$1" "$R" "$2" ${3:+--thread "$3"}; }
 watch() { python3 scripts/mm.py watch "$R" --quiet 120 --timeout 400 --linger "${PAUSE:-0}" ${1:+--until "$1"} | tee /dev/stderr; }
