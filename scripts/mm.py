@@ -77,18 +77,22 @@ def read(channel, thread=None, n=20):
 def watch(channel, quiet, timeout, until=None):
     """Print new channel posts (top-level and replies) until `until` appears, `quiet` s pass with
     no new post, or `timeout` s pass. Status posts Switch keeps editing ('Working…') are skipped."""
+    # ponytail: posts that land between two watch calls (while `say` runs, well under a second) are
+    # treated as seen. Agents take seconds to reply, so nothing is lost in practice.
     seen = {p["id"] for p in fetch(channel, n=60)}
     start = last = time.time()
     while time.time() - start < timeout:
         time.sleep(5)
+        hit = False
         for p in fetch(channel, n=60):
             if p["id"] in seen:
                 continue
             seen.add(p["id"])
             last = time.time()
             show(p)
-            if until and re.search(until, p["message"]):
-                return 0
+            hit = hit or bool(until and re.search(until, p["message"]))
+        if hit:  # finish the batch first, so posts that arrived alongside the match are shown
+            return 0
         if time.time() - last > quiet:
             print(f"-- quiet for {quiet}s", flush=True)
             return 0
