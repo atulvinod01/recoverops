@@ -87,3 +87,20 @@ Fixed during Phase E
 - Harness: during a pause the script slept blind, so a reply arriving then (slow S1: reconciler at 19:36:52) was never printed. `mm.py watch --linger` now keeps printing during the pause.
 
 Still to do: one run typed by hand by Atul (video rehearsal).
+
+## 5 Nov 2026: S1 typed by hand by Atul (19:53–20:06), PASS
+
+Atul played finance and sales in two browser windows. The first try posted every reply in the room's main box instead of the case thread, which is the mistake a real user makes:
+
+| Message posted top-level (outside the case thread) | What the agents did |
+|---|---|
+| sales answers investigator | investigator used it and returned evidence in the case thread |
+| sales: `@case-lead approve` | not actioned: outside the case thread, and sales can't decide |
+| finance: `edit: …` | not applied; case-lead asked finance to repeat it in the case thread |
+| finance: `approve …` | not applied; case-lead also warned that approving before the edit would release the unedited drafts |
+
+Then in the case thread: sales repeated the answer (case-lead saw nothing new and posted nothing), finance's edit put the credit note on HOLD, finance approved. Result: approved, owner sales, due 2026-11-14, recoverable pending ₹12,000, 2 outbox files marked NOT SENT, board posted top-level. Same findings and citations as the scripted runs.
+
+Found and fixed: case-lead pointed finance to the thread by its internal id (`sw_bf04…`). Shared rules now say to describe a thread in words (commit bdb6441; not yet seen live).
+Noted: decisions refused for being outside the thread never reach case.py, so they are in the chat but not in the audit log. Decisions inside the thread are always audited.
+Video tip: only finance's first "payment …" message goes in the main box; everything else via Reply.
