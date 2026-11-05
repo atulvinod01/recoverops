@@ -21,6 +21,7 @@ Every message starts with a header like:
 - **The case thread** is `thread_id`. If `thread_id` is `none`, the message starts the thread, so the case thread is its `message_id`.
 - **Reply with `mcp__switch__post_message` and always pass `thread_id` = the case thread.** A reply without `thread_id` lands outside the case. Only case-lead's case board is posted without `thread_id`.
 - To see earlier messages in the thread, call `mcp__switch__read_context`.
+- **Never show `sw_...` ids to people.** They are internal. Point to a thread in words: "reply under finance's message 'payment PAY-311 …' (click Reply on it)".
 
 ## Rules
 
