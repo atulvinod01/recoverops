@@ -74,9 +74,10 @@ def read(channel, thread=None, n=20):
         show(p)
 
 
-def watch(channel, quiet, timeout, until=None):
+def watch(channel, quiet, timeout, until=None, linger=0):
     """Print new channel posts (top-level and replies) until `until` appears, `quiet` s pass with
-    no new post, or `timeout` s pass. Status posts Switch keeps editing ('Working…') are skipped."""
+    no new post, or `timeout` s pass. Status posts Switch keeps editing ('Working…') are skipped.
+    After a match, keep printing for `linger` s (a person reading before they reply)."""
     # ponytail: posts that land between two watch calls (while `say` runs, well under a second) are
     # treated as seen. Agents take seconds to reply, so nothing is lost in practice.
     seen = {p["id"] for p in fetch(channel, n=60)}
@@ -92,12 +93,26 @@ def watch(channel, quiet, timeout, until=None):
             show(p)
             hit = hit or bool(until and re.search(until, p["message"]))
         if hit:  # finish the batch first, so posts that arrived alongside the match are shown
+            if linger:
+                return watch_more(channel, seen, linger)
             return 0
         if time.time() - last > quiet:
             print(f"-- quiet for {quiet}s", flush=True)
             return 0
     print(f"-- timeout {timeout}s", flush=True)
     return 1
+
+
+def watch_more(channel, seen, seconds):
+    """Keep printing new posts for `seconds` s."""
+    end = time.time() + seconds
+    while time.time() < end:
+        time.sleep(min(5, max(0, end - time.time())))
+        for p in fetch(channel, n=60):
+            if p["id"] not in seen:
+                seen.add(p["id"])
+                show(p)
+    return 0
 
 
 if __name__ == "__main__":
@@ -117,10 +132,11 @@ if __name__ == "__main__":
     w.add_argument("--quiet", type=int, default=120)
     w.add_argument("--timeout", type=int, default=600)
     w.add_argument("--until")
+    w.add_argument("--linger", type=int, default=0)
     a = ap.parse_args()
     if a.cmd == "say":
         print(say(a.who, a.channel, a.message, a.thread))
     elif a.cmd == "read":
         read(a.channel, a.thread, a.n)
     else:
-        sys.exit(watch(a.channel, a.quiet, a.timeout, a.until))
+        sys.exit(watch(a.channel, a.quiet, a.timeout, a.until, a.linger))

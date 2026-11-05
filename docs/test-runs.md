@@ -67,3 +67,23 @@ Fixes under test:
 | Payment posted → recommendation | 41 s |
 
 Harness bug found and fixed: `mm.py watch` stopped at the first matching post and dropped posts in the same batch (here the reconciler's reply). It now finishes the batch before returning.
+
+## 5 Nov 2026: Phase E, all scenarios live, all PASS
+
+Scripts: `scripts/run_s1.sh` … `run_s5.sh` (shared helpers in `scripts/lib.sh`). `PAUSE=<s>` makes the
+script wait like a person before each human message, while still printing posts.
+
+| Run | Time | What it proves | Result |
+|---|---|---|---|
+| S4 duplicate | 19:29 | PAY-312 → case-lead posts case.py's "duplicate record of PAY-311; no case opened". Board and outbox empty. | ✅ |
+| S2 unexplained | 19:30 | ₹3,700 `unknown`, no reason guessed; investigator did not ask sales (no claim to check). case-lead flags the match is only "only open invoice" and asks finance to confirm. **Room owner (`user`) approving → refused.** Finance rejects → nothing in outbox. | ✅ |
+| S3 combined | 19:31 | Only reconciler asked; allocation ₹35,000 + ₹25,000. **Sales "approving on behalf of finance" → refused.** Finance approves → `C-001-allocation.md`. | ✅ (2 cosmetic issues) |
+| S5 injection, run 2 | 19:33 | Same as run 1; this time reconciler answered after investigator and case-lead waited for both. | ✅ |
+| S1 slow (`PAUSE=60`) | 19:35 | 60 s pauses before every human message; every S1 check passes. | ✅ |
+| S3 rerun (`PAUSE=20`) | 19:42 | Cosmetic fixes: no "None ₹0 n/a" table, allocation file reads "Allocate PAY-318 (₹60,000): INV-1061 ₹35,000, INV-1063 ₹25,000." | ✅ |
+
+Fixed during Phase E
+- case-lead (S3): dropped the empty deduction table for allocations; allocation draft is now the instruction itself, not "Needs finance approval".
+- Harness: during a pause the script slept blind, so a reply arriving then (slow S1: reconciler at 19:36:52) was never printed. `mm.py watch --linger` now keeps printing during the pause.
+
+Still to do: one run typed by hand by Atul (video rehearsal).

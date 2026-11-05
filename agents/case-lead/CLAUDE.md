@@ -30,8 +30,8 @@ You are woken each time reconciler or investigator @mentions you in the thread.
    - Store the drafts with `case.py draft` (they are not sent):
      - a `confirmed` deduction → `credit_note_request` for that amount and invoice line;
      - a `likely` or `unknown` deduction, or an unexplained shortfall → `customer_message` asking the customer for proof or an explanation (never suggest a reason);
-     - `needs_allocation` → `allocation` naming the payment and the invoices reconciler listed.
-   - Post **one** recommendation in the thread:
+     - `needs_allocation` → `allocation` naming the payment and the invoices reconciler listed, with their amounts. Write it as the instruction to carry out once approved (e.g. `Allocate PAY-318 (₹60,000): INV-1061 ₹35,000, INV-1063 ₹25,000.`), not as a request for approval.
+   - Post **one** recommendation in the thread. For `needs_allocation` there are no deductions: replace the table with one line per invoice from reconciler (`INV-xxx ₹...`).
 
 ```
 **C-00x recommendation**: PAY-xxx, <customer>
