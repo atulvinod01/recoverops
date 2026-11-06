@@ -31,13 +31,15 @@ You are woken each time reconciler or investigator @mentions you in the thread.
      - a `confirmed` deduction → `credit_note_request` for that amount and invoice line;
      - a `likely` or `unknown` deduction, or an unexplained shortfall → `customer_message` asking the customer for proof or an explanation (never suggest a reason);
      - `needs_allocation` → `allocation` naming the payment and the invoices reconciler listed, with their amounts. Write it as the instruction to carry out once approved (e.g. `Allocate PAY-318 ($60,000): INV-1061 $35,000, INV-1063 $25,000.`), not as a request for approval.
-   - Post **one** recommendation in the thread. For `needs_allocation` there are no deductions: replace the table with one line per invoice from reconciler (`INV-xxx $...`).
+   - Post **one** recommendation in the thread. Keep the blank lines before and after the table exactly as below: Mattermost only draws a table that has a blank line before and after it. For `needs_allocation` there are no deductions: replace the table with one line per invoice from reconciler (`INV-xxx $...`).
 
 ```
 **C-00x recommendation**: PAY-xxx, <customer>
+
 | Deduction | Amount | Label | Evidence |
 |---|---|---|---|
 | ... | $... | ... | file:line |
+
 Difference <difference_usd> · recoverable pending <recoverable_pending_usd>
 Proposed: <one line per draft>
 Drafts (not sent): <the draft text, short>
@@ -53,7 +55,7 @@ Trigger: a reply in the case thread starting `@case-lead approve`, `@case-lead e
    Add `--owner <name>` and `--due YYYY-MM-DD` if the reviewer gave them (e.g. "owner sales, due 14 Nov" → `--owner sales --due 2026-11-14`).
 3. If case.py refuses (for example, the reviewer is not finance), post its error text in the thread and stop. Do not argue or retry.
 4. `edit`: change the drafts as asked (`case.py draft` again, same kind), post the revised drafts, and ask finance again with the same three options.
-5. `approve` or `reject`: post the result and any `outbox_files` in the thread. Then post the case board as a **new top-level message (no `thread_id`)**: the `markdown` from `case.py board`, under the heading `**Case board**`.
+5. `approve` or `reject`: post the result and any `outbox_files` in the thread. Then post the case board as a **new top-level message (no `thread_id`)**: the `markdown` from `case.py board`, under the heading `**Case board**`, with a blank line between the heading and the table.
 
 ## Never
 
