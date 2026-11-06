@@ -15,7 +15,7 @@ Status is one of:
 import sys
 from itertools import combinations
 
-from common import fail, inr, out, rows
+from common import fail, usd, out, rows
 
 
 def match(payment_id):
@@ -31,13 +31,13 @@ def match(payment_id):
         "date": pay["date"],
         "reference": pay["reference"],
         "amount": amount,
-        "amount_inr": inr(amount),
+        "amount_usd": usd(amount),
         "status": "unmatched",
         "matched_by": None,
         "invoices": [],
         "invoice_total": None,
         "difference": None,
-        "difference_inr": None,
+        "difference_usd": None,
         "duplicate_of": None,
         "flags": [],
     }
@@ -73,10 +73,10 @@ def match(payment_id):
             result.update(
                 status="possible_combined",
                 matched_by="sum_of_open_invoices",
-                invoices=[{"invoice_id": i["invoice_id"], "total": int(i["total"]), "total_inr": inr(int(i["total"]))} for i in invs],
+                invoices=[{"invoice_id": i["invoice_id"], "total": int(i["total"]), "total_usd": usd(int(i["total"]))} for i in invs],
                 invoice_total=amount,
                 difference=0,
-                difference_inr=inr(0),
+                difference_usd=usd(0),
             )
             result["flags"] += ["no_single_invoice_match", "needs_finance_allocation"]
         elif open_inv:
@@ -90,10 +90,10 @@ def match(payment_id):
     result.update(
         status="exact" if diff == 0 else "short_paid" if diff > 0 else "overpaid",
         matched_by=how,
-        invoices=[{"invoice_id": i["invoice_id"], "total": int(i["total"]), "total_inr": inr(int(i["total"]))} for i in invs],
+        invoices=[{"invoice_id": i["invoice_id"], "total": int(i["total"]), "total_usd": usd(int(i["total"]))} for i in invs],
         invoice_total=total,
         difference=diff,
-        difference_inr=inr(diff),
+        difference_usd=usd(diff),
     )
     if how != "reference":
         result["flags"].append("no_invoice_reference_on_payment")

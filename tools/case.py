@@ -18,7 +18,7 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-from common import ROOT, fail, inr, out
+from common import ROOT, fail, usd, out
 from match import match
 
 DB = Path(os.environ.get("RECOVEROPS_DB", ROOT / "cases.db"))
@@ -81,12 +81,12 @@ def summary(con, case_id):
     pending = None if c["difference"] is None else c["difference"] - confirmed
     c.update(
         invoice_ids=c["invoice_ids"].split(",") if c["invoice_ids"] else [],
-        difference_inr=None if c["difference"] is None else inr(c["difference"]),
+        difference_usd=None if c["difference"] is None else usd(c["difference"]),
         confirmed_deductions=confirmed,
-        confirmed_deductions_inr=inr(confirmed),
+        confirmed_deductions_usd=usd(confirmed),
         recoverable_pending=pending,
-        recoverable_pending_inr=None if pending is None else inr(pending),
-        findings=[dict(f, deduction_amount_inr=inr(f["deduction_amount"])) for f in findings],
+        recoverable_pending_usd=None if pending is None else usd(pending),
+        findings=[dict(f, deduction_amount_usd=usd(f["deduction_amount"])) for f in findings],
         drafts=[dict(r) for r in con.execute("SELECT kind, body, updated_at FROM drafts WHERE case_id=?", (case_id,))],
         approvals=[dict(r) for r in con.execute("SELECT reviewer, decision, comment, timestamp FROM approvals WHERE case_id=? ORDER BY approval_id", (case_id,))],
     )
@@ -113,7 +113,7 @@ def cmd_open(a):
         )
         case_id = f"C-{cur.lastrowid:03d}"
         con.execute("UPDATE cases SET case_id=? WHERE id=?", (case_id, cur.lastrowid))
-        audit(con, case_id, a.actor, "open", f"{a.payment_id} {m['status']} difference {m['difference_inr']}")
+        audit(con, case_id, a.actor, "open", f"{a.payment_id} {m['status']} difference {m['difference_usd']}")
         return dict(summary(con, case_id), already_open=False, match_status=m["status"], match_flags=m["flags"])
 
 
@@ -132,7 +132,7 @@ def cmd_finding(a):
             "INSERT OR REPLACE INTO findings VALUES (?,?,?,?,?,?,?,?)",
             (a.case_id, a.key, a.agent, a.amount, a.label, a.citation, a.note, now()),
         )
-        audit(con, a.case_id, a.agent, "finding", f"{a.key}: {inr(a.amount)} {a.label} ({a.citation or 'no citation'})")
+        audit(con, a.case_id, a.agent, "finding", f"{a.key}: {usd(a.amount)} {a.label} ({a.citation or 'no citation'})")
         return summary(con, a.case_id)
 
 
@@ -191,8 +191,8 @@ def cmd_board(a):
         "| Case | Customer | Payment | Difference | Recoverable pending | Status | Owner | Due |",
         "|---|---|---|---|---|---|---|---|",
     ] + [
-        f"| {c['case_id']} | {c['customer']} | {c['payment_id']} | {c['difference_inr'] or '-'} | "
-        f"{c['recoverable_pending_inr'] or '-'} | {c['status']} | {c['owner'] or '-'} | {c['due_date'] or '-'} |"
+        f"| {c['case_id']} | {c['customer']} | {c['payment_id']} | {c['difference_usd'] or '-'} | "
+        f"{c['recoverable_pending_usd'] or '-'} | {c['status']} | {c['owner'] or '-'} | {c['due_date'] or '-'} |"
         for c in cases
     ]
     keep = ("case_id", "customer", "payment_id", "difference", "recoverable_pending", "status", "owner", "due_date")

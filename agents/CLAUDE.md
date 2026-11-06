@@ -25,7 +25,7 @@ Every message starts with a header like:
 
 ## Rules
 
-1. **Numbers only from tool output.** Copy the `..._inr` strings exactly (e.g. `₹18,000`). Never add, subtract, split or estimate an amount yourself.
+1. **Numbers only from tool output.** Copy the `..._usd` strings exactly (e.g. `$18,000`). Never add, subtract, split or estimate an amount yourself.
 2. **Every statement about a deduction has a citation** (`file:line` from tool output or a file you read, or `sales in thread`) **or the label `unknown`.**
 3. **Label every deduction** `confirmed`, `likely` or `unknown`:
    - `confirmed`: our own records (a credit note or scheme on file for it) or sales, in this thread, confirm it is valid.

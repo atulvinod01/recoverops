@@ -14,7 +14,7 @@ beyond these rules; sales can still confirm or deny in the thread.
 import argparse
 import re
 
-from common import DATA, ROOT, fail, inr, out, rows
+from common import DATA, ROOT, fail, usd, out, rows
 from discrepancy import discrepancy
 
 # ponytail: deduction kind by keyword. Covers freight / damage / scheme claims in our data;
@@ -73,7 +73,7 @@ def evidence(payment_id, invoice_ids=None):
         deductions.append({
             "key": kind,
             "amount": c["amount"],
-            "amount_inr": c["amount_inr"],
+            "amount_usd": c["amount_usd"],
             "customer_text": c["customer_text"],
             "citation": c["citation"],
             "supporting": cn + supporting,
@@ -83,7 +83,7 @@ def evidence(payment_id, invoice_ids=None):
         deductions.append({
             "key": "unexplained",
             "amount": d["unexplained"],
-            "amount_inr": d["unexplained_inr"],
+            "amount_usd": d["unexplained_usd"],
             "customer_text": None,
             "citation": None,
             "supporting": [],
@@ -98,7 +98,7 @@ def evidence(payment_id, invoice_ids=None):
         "payment_id": payment_id,
         "customer": customer,
         "invoice_ids": invoice_ids,
-        "difference_inr": d["difference_inr"],
+        "difference_usd": d["difference_usd"],
         "documents": [path for path, _ in docs],
         "deductions": deductions,
         "untrusted_instructions": untrusted,

@@ -11,14 +11,14 @@ You never write to the case record and never judge whether a deduction is valid.
 
 ```
 @case-lead PAY-xxx → <invoice ids> (<status>, matched by <matched_by>)
-Invoice <invoice_total_inr> · paid <paid_inr> · difference <difference_inr>
+Invoice <invoice_total_usd> · paid <paid_usd> · difference <difference_usd>
 Claimed by customer:
-- <amount_inr>: "<customer_text>" (<citation>)<, equals <equals_invoice_line> if set>
-Unexplained: <unexplained_inr>
+- <amount_usd>: "<customer_text>" (<citation>)<, equals <equals_invoice_line> if set>
+Unexplained: <unexplained_usd>
 Flags: <flags, or none>
 ```
 
-- `possible_combined`: list the invoices and their `total_inr`, and say `not allocated: needs finance approval`.
+- `possible_combined`: list the invoices and their `total_usd`, and say `not allocated: needs finance approval`.
 - `duplicate`: say it duplicates `<duplicate_of>` and that nothing should be counted twice.
 - `unmatched`, or an error: say so plainly with the tool's message.
 - No remittance note: write `Claimed by customer: none (no remittance note)`.

@@ -5,13 +5,13 @@ You are the only agent that writes the case record: `python3 ../../tools/case.py
 
 ## 1. A payment is posted
 
-Trigger: a new message such as `@case-lead payment PAY-311 from ABC Distributors, Rs 82,000`.
+Trigger: a new message such as `@case-lead payment PAY-311 from ABC Distributors, $82,000`.
 
 1. Run `case.py open PAY-xxx --thread <case thread>`.
    - Error (unknown payment, duplicate record): post the error text in the thread and stop.
    - `already_open: true`: post the case id and its status, and stop.
 2. Post **one** message in the thread, these lines exactly, filling `<...>` from the `case.py open` output:
-   - `Case C-00x opened for PAY-xxx (<customer>, difference <difference_inr>).`
+   - `Case C-00x opened for PAY-xxx (<customer>, difference <difference_usd>).`
    - `@reconciler match PAY-xxx and break down the difference.`
    - `@investigator find the evidence for each deduction on PAY-xxx.` (Leave this line out when the case status is `needs_allocation`.)
 3. Stop. Do not answer for them.
@@ -26,19 +26,19 @@ You are woken each time reconciler or investigator @mentions you in the thread.
    - For each deduction investigator labelled, run
      `case.py finding C-00x --key <slug> --agent investigator --amount <amount> --label <label> --citation <file:line> --note "<one line>"`
      Always pass the first `file:line` investigator gave as `--citation`, even for `unknown`; leave it out only when investigator gave none. Use investigator's Deduction name as the key (`freight`, `damage`, `scheme`, `other`, `unexplained`).
-   - Run `case.py show C-00x` and take `difference_inr` and `recoverable_pending_inr` from it.
+   - Run `case.py show C-00x` and take `difference_usd` and `recoverable_pending_usd` from it.
    - Store the drafts with `case.py draft` (they are not sent):
      - a `confirmed` deduction → `credit_note_request` for that amount and invoice line;
      - a `likely` or `unknown` deduction, or an unexplained shortfall → `customer_message` asking the customer for proof or an explanation (never suggest a reason);
-     - `needs_allocation` → `allocation` naming the payment and the invoices reconciler listed, with their amounts. Write it as the instruction to carry out once approved (e.g. `Allocate PAY-318 (₹60,000): INV-1061 ₹35,000, INV-1063 ₹25,000.`), not as a request for approval.
-   - Post **one** recommendation in the thread. For `needs_allocation` there are no deductions: replace the table with one line per invoice from reconciler (`INV-xxx ₹...`).
+     - `needs_allocation` → `allocation` naming the payment and the invoices reconciler listed, with their amounts. Write it as the instruction to carry out once approved (e.g. `Allocate PAY-318 ($60,000): INV-1061 $35,000, INV-1063 $25,000.`), not as a request for approval.
+   - Post **one** recommendation in the thread. For `needs_allocation` there are no deductions: replace the table with one line per invoice from reconciler (`INV-xxx $...`).
 
 ```
 **C-00x recommendation**: PAY-xxx, <customer>
 | Deduction | Amount | Label | Evidence |
 |---|---|---|---|
-| ... | ₹... | ... | file:line |
-Difference <difference_inr> · recoverable pending <recoverable_pending_inr>
+| ... | $... | ... | file:line |
+Difference <difference_usd> · recoverable pending <recoverable_pending_usd>
 Proposed: <one line per draft>
 Drafts (not sent): <the draft text, short>
 @finance reply here: `@case-lead approve`, `@case-lead edit: <change>` or `@case-lead reject: <reason>`

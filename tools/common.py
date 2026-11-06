@@ -1,4 +1,4 @@
-"""Shared helpers for RecoverOps tools: repo paths, CSV loading, rupee formatting, JSON output."""
+"""Shared helpers for RecoverOps tools: repo paths, CSV loading, dollar formatting, JSON output."""
 import csv
 import json
 import sys
@@ -14,17 +14,9 @@ def rows(name):
         return list(csv.DictReader(f))
 
 
-def inr(n):
-    """Indian-grouped rupees: 100000 -> '₹1,00,000'. Agents quote this string verbatim."""
-    s = str(abs(int(n)))
-    head, tail = s[:-3], s[-3:]
-    groups = []
-    while len(head) > 2:
-        groups.insert(0, head[-2:])
-        head = head[:-2]
-    if head:
-        groups.insert(0, head)
-    return ("-" if n < 0 else "") + "₹" + ",".join(groups + [tail])
+def usd(n):
+    """US dollars with thousands separators: 100000 -> '$100,000'. Agents quote this string verbatim."""
+    return ("-" if n < 0 else "") + f"${abs(int(n)):,}"
 
 
 def out(obj, code=0):
@@ -37,9 +29,9 @@ def fail(msg):
 
 
 if __name__ == "__main__":
-    assert inr(100000) == "₹1,00,000"
-    assert inr(18000) == "₹18,000"
-    assert inr(500) == "₹500"
-    assert inr(12345678) == "₹1,23,45,678"
-    assert inr(-3700) == "-₹3,700"
+    assert usd(100000) == "$100,000"
+    assert usd(18000) == "$18,000"
+    assert usd(500) == "$500"
+    assert usd(12345678) == "$12,345,678"
+    assert usd(-3700) == "-$3,700"
     print("ok")

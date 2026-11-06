@@ -69,5 +69,5 @@ room:
 # No agent is mentioned here on purpose: replies to the kickoff do not reach the chat (spike finding).
 kickoff: |
   RecoverOps is ready. To open a case, post a new message (not a reply) such as:
-  case-lead, payment PAY-311 from ABC Distributors, Rs 82,000 (with an @ before case-lead).
+  case-lead, payment PAY-311 from ABC Distributors, $82,000 (with an @ before case-lead).
   finance approves in the case thread with "approve", "edit: ..." or "reject: ..." addressed to case-lead.

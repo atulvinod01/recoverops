@@ -9,10 +9,10 @@ unexplained = difference - claimed total. It does not judge whether a claim is v
 import argparse
 import re
 
-from common import DATA, ROOT, fail, inr, out, rows
+from common import DATA, ROOT, fail, usd, out, rows
 from match import match
 
-AMOUNT = re.compile(r"(?:Rs\.?|₹|INR)\s*([\d,]+)", re.I)
+AMOUNT = re.compile(r"(?:\$|USD)\s*([\d,]+)", re.I)
 # ponytail: a claimed deduction is any remittance line starting "Less:". Real remittances vary;
 # extend this pattern (or add per-customer formats) when new layouts show up.
 DEDUCTION = re.compile(r"^\s*less\s*:", re.I)
@@ -33,7 +33,7 @@ def remittance_claims(keys):
                 amt = int(m.group(1).replace(",", ""))
                 claims.append({
                     "amount": amt,
-                    "amount_inr": inr(amt),
+                    "amount_usd": usd(amt),
                     "customer_text": line.strip(),
                     "citation": f"{rel}:{n}",
                 })
@@ -60,7 +60,7 @@ def discrepancy(payment_id, invoice_ids=None):
             "qty": int(l["qty"]),
             "rate": int(l["rate"]),
             "amount": int(l["amount"]),
-            "amount_inr": inr(int(l["amount"])),
+            "amount_usd": usd(int(l["amount"])),
         }
         for l in rows("invoice_lines")
         if l["invoice_id"] in invoice_ids
@@ -90,19 +90,19 @@ def discrepancy(payment_id, invoice_ids=None):
         "customer": m["customer"],
         "match_status": m["status"],
         "paid": m["amount"],
-        "paid_inr": m["amount_inr"],
+        "paid_usd": m["amount_usd"],
         "invoice_ids": invoice_ids,
         "invoice_total": total,
-        "invoice_total_inr": inr(total),
+        "invoice_total_usd": usd(total),
         "invoice_lines": lines,
         "difference": diff,
-        "difference_inr": inr(diff),
+        "difference_usd": usd(diff),
         "remittance_files": files,
         "claimed_deductions": claims,
         "claimed_total": claimed,
-        "claimed_total_inr": inr(claimed),
+        "claimed_total_usd": usd(claimed),
         "unexplained": unexplained,
-        "unexplained_inr": inr(unexplained),
+        "unexplained_usd": usd(unexplained),
         "flags": flags,
     }
 
