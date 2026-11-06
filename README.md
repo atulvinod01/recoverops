@@ -4,6 +4,11 @@
 
 Built for the WeMakeDevs *Flip the Switch* hackathon, Track 01 (Best Business Workflow). All data is synthetic.
 
+> **Quick start**
+> - **Just want to see it?** Watch the 3-minute demo: VIDEO_LINK
+> - **Want to try it?** Run four commands once (clone, plus three to create the `finance` and `sales` chat users), then import the template in Switch Console. After that, everything happens in the chat. See [Setup](#setup) and [Run it](#run-it).
+> - **Optional:** scripted runs of all five scenarios (`scripts/run_s1.sh` … `run_s5.sh`) and the tests (`python3 -m pytest -q tests`).
+
 ## The problem
 
 A customer pays an invoice short. ABC Distributors owes ₹1,00,000 and pays ₹82,000. Someone in finance has to find out why:
@@ -206,6 +211,15 @@ docs/                      spike results, test runs, blueprint
 ```
 
 There is deliberately no `CLAUDE.md` at the repo root: Claude Code would load it into every agent.
+
+## What's next
+
+None of these are built; they are the natural next steps.
+
+- **A warehouse or logistics person in the room.** investigator would ask them about damage claims and ask sales about promises, pulling in the right person for each deduction.
+- **Real data instead of CSV files:** bank statement imports and ERP exports feeding `tools/`, so a short payment opens a case on its own.
+- **Follow-ups.** When a customer doesn't answer the proof request by the due date, case-lead reminds the owner in the thread.
+- **Approval limits**, for example a second approver above ₹50,000, enforced in `tools/case.py` like the finance-only rule.
 
 ## Limitations
 
