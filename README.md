@@ -5,7 +5,7 @@
 Built for the WeMakeDevs *Flip the Switch* hackathon, Track 01 (Best Business Workflow). All data is synthetic.
 
 > **Quick start**
-> - **Just want to see it?** Watch the 3-minute demo: VIDEO_LINK
+> - **Just want to see it?** Watch the [2-minute demo video](https://youtu.be/QLrGB3bZ2Ms) (a live run in the Switch room, with subtitles).
 > - **Want to try it?** Run four commands once (clone, plus three to create the `finance` and `sales` chat users), then import the template in Switch Console. After that, everything happens in the chat. See [Setup](#setup) and [Run it](#run-it).
 > - **Optional:** scripted runs of all five scenarios (`scripts/run_s1.sh` … `run_s5.sh`) and the tests (`python3 -m pytest -q tests`).
 
