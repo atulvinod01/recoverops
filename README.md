@@ -209,7 +209,7 @@ tools/case.py              SQLite case store: open, finding, draft, decide (fina
 data/                      synthetic invoices, payments, credit notes, schemes, remittance notes, emails
 scripts/                   mm.py (post/read Mattermost), reset_demo.sh, run_s1..s5.sh
 tests/test_tools.py        exact-value tests
-docs/                      spike results, test runs, blueprint
+docs/                      spike results, test runs
 ```
 
 There is deliberately no `CLAUDE.md` at the repo root: Claude Code would load it into every agent.
