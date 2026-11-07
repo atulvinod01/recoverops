@@ -233,3 +233,7 @@ None of these are built; they are the natural next steps.
 - **Cost.** Each case costs about $1 on `sonnet` (the template default).
 - **Switch's own status posts.** Switch adds "Working…" and "Queued…" posts to the thread, and each agent answers a `!reset` with a short "Session reset complete" post.
 - **A Claude Code plugin you have enabled loads into the agents too,** because they run under your login. Turn off any that change behaviour before recording.
+
+## License
+
+[MIT](LICENSE). All data in `data/` is synthetic.
